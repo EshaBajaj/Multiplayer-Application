@@ -173,6 +173,32 @@ body {
   margin: 0 auto 10px auto;
 }
 
+/* UPWARD ENTRANCE ANIMATION EFFECTS */
+@keyframes animateUp {
+  0% {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-up {
+  animation: animateUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-up-delay-1 {
+  animation: animateUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  opacity: 0;
+}
+
+.animate-up-delay-2 {
+  animation: animateUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  opacity: 0;
+}
+
 /* Hero Section Typography (ACTUAL PROPORTIONAL SIZING) */
 .section-hero {
   text-align: center;
