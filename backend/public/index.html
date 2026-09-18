@@ -66,86 +66,88 @@
       </div>
     </header>
 
-    <!-- STEP 1: HERO & PLAYER SELECTOR -->
+    <!-- STEP 1: HERO & NAME INPUT -->
     <main id="sectionStep1" class="content-section">
       
       <div class="section-hero">
         <div class="center-emblem animate-up">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         <h1 class="brand-heading animate-up">RoxStar Game</h1>
-        <h2 class="hero-title animate-up-delay-1">Select Your Player Identity</h2>
-        <p class="hero-subtitle animate-up-delay-1">Choose a player profile or enter a custom handle to join live rooms and spin wheels.</p>
+        <h2 class="hero-title animate-up-delay-1">What is your name?</h2>
+        <p class="hero-subtitle animate-up-delay-1">Enter your display name or handle to enter the multiplayer arena.</p>
       </div>
       
-      <div class="animate-up-delay-2" style="display: flex; flex-direction: column; gap: 18px; max-width: 720px; margin: 0 auto; width: 100%;">
+      <div class="animate-up-delay-2" style="display: flex; flex-direction: column; gap: 18px; max-width: 540px; margin: 0 auto; width: 100%;">
         
-        <!-- 4 Profile Cards Grid -->
-        <div class="player-grid-unboxed">
-          <button class="player-select-btn active" id="btnP1" onclick="selectPlayer('player1')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-8-4 7-6-7z"/></svg>
-            Player 1 (Host)
-          </button>
-          <button class="player-select-btn" id="btnP2" onclick="selectPlayer('player2')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            Player 2
-          </button>
-          <button class="player-select-btn" id="btnP3" onclick="selectPlayer('player3')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-            Player 3
-          </button>
-          <button class="player-select-btn" id="btnP4" onclick="selectPlayer('player4')">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
-            Player 4
+        <!-- Name Input Floating Bar -->
+        <div class="floating-input-bar">
+          <input type="text" id="usernameInput" class="floating-input" placeholder="Type your name here..." autofocus />
+          <button class="btn btn-hero" onclick="confirmStep1()">
+            Continue to Lobby
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
 
-        <!-- Floating Prompt Input Bar -->
-        <div class="floating-input-bar">
-          <input type="text" id="usernameInput" class="floating-input" placeholder="Enter player handle..." value="Player 1 (Host)" />
-          <button class="btn btn-hero" onclick="confirmStep1()">
-            Continue to Room Lobby
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-          </button>
+        <!-- Quick Tag Suggestions -->
+        <div style="display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;">
+          <span style="font-size: 0.78rem; color: var(--text-dim);">Suggestions:</span>
+          <button class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.78rem; border-radius: 999px;" onclick="quickSetName('Alex')">Alex</button>
+          <button class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.78rem; border-radius: 999px;" onclick="quickSetName('Jordan')">Jordan</button>
+          <button class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.78rem; border-radius: 999px;" onclick="quickSetName('Sarah')">Sarah</button>
+          <button class="btn btn-secondary" style="padding: 3px 10px; font-size: 0.78rem; border-radius: 999px;" onclick="quickSetName('Taylor')">Taylor</button>
         </div>
 
       </div>
     </main>
 
-    <!-- STEP 2: ROOM LOBBY -->
+    <!-- STEP 2: ROOM LOBBY (JOIN BY ID OR CREATE) -->
     <main id="sectionStep2" class="content-section" style="display: none;">
       <div class="section-hero">
         <h1 class="hero-title">Live Room Lobby</h1>
-        <p class="hero-subtitle">Join an ongoing active voice arena or launch a brand new room.</p>
+        <p class="hero-subtitle">Join an existing room using a Room ID or create a new room.</p>
       </div>
 
       <div class="segmented-control" style="max-width: 480px; margin: 0 auto; width: 100%;">
         <button class="segmented-btn active" id="modeJoinBtn" onclick="switchLobbyMode('join')">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Join Active Room
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Join Room
         </button>
         <button class="segmented-btn" id="modeCreateBtn" onclick="switchLobbyMode('create')">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Create New Room
+          Create Room
         </button>
       </div>
 
-      <!-- Mode A: Join Room -->
-      <div id="lobbyJoinMode" style="display: flex; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto; width: 100%;">
+      <!-- Mode A: Join Room by ID or Dropdown -->
+      <div id="lobbyJoinMode" style="display: flex; flex-direction: column; gap: 16px; max-width: 480px; margin: 0 auto; width: 100%;">
+        
+        <div class="form-group">
+          <label>Enter Room ID</label>
+          <input type="text" id="directRoomIdInput" placeholder="Paste or type Room ID..." />
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px; margin: 2px 0;">
+          <div style="flex:1; height: 1px; background: var(--border-subtle);"></div>
+          <span style="font-size: 0.75rem; color: var(--text-dim); font-weight: 600;">OR SELECT ACTIVE ROOM</span>
+          <div style="flex:1; height: 1px; background: var(--border-subtle);"></div>
+        </div>
+
         <div class="form-group">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <label>Select Active Room</label>
+            <label>Active Rooms</label>
             <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.75rem;" onclick="fetchRooms()">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
               Refresh
             </button>
           </div>
-          <select id="roomSelect">
+          <select id="roomSelect" onchange="onSelectRoomChange()">
             <option value="">-- Choose active room --</option>
           </select>
         </div>
+
         <button class="btn" style="padding: 11px; font-size: 0.9rem;" onclick="joinRoomSocket()">
-          Enter Selected Room
+          Enter Room
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
@@ -154,7 +156,7 @@
       <div id="lobbyCreateMode" style="display: none; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto; width: 100%;">
         <div class="form-group">
           <label>New Room Title</label>
-          <input type="text" id="newRoomTitleInput" placeholder="e.g. Arena 1" value="Live Arena 1" />
+          <input type="text" id="newRoomTitleInput" placeholder="e.g. VIP Music Lounge" value="Live Arena 1" />
         </div>
         <button class="btn btn-accent" style="padding: 11px; font-size: 0.9rem;" onclick="createRoom()">
           Create & Enter Room

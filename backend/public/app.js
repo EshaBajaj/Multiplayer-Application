@@ -191,20 +191,12 @@ function logConsole(type, data) {
   showToast(type, data);
 }
 
-// 1. Step 1: Select Player
-function selectPlayer(key) {
-  ['btnP1', 'btnP2', 'btnP3', 'btnP4'].forEach((btnId) => {
-    const btn = document.getElementById(btnId);
-    if (btn) btn.classList.remove('active');
-  });
-
-  const p = playersMap[key];
-  if (p) {
-    const input = document.getElementById('usernameInput');
-    if (input) input.value = p.display_name;
-
-    const activeBtn = document.getElementById('btn' + key.toUpperCase().replace('LAYER', 'P'));
-    if (activeBtn) activeBtn.classList.add('active');
+// 1. Step 1: Quick Name Selection Helper
+function quickSetName(name) {
+  const input = document.getElementById('usernameInput');
+  if (input) {
+    input.value = name;
+    input.focus();
   }
 }
 
@@ -303,21 +295,46 @@ async function createRoom() {
   }
 }
 
-function joinRoomById(roomId) {
+function onSelectRoomChange() {
   const select = document.getElementById('roomSelect');
-  if (select) select.value = roomId;
+  const directInput = document.getElementById('directRoomIdInput');
+  if (select && directInput && select.value) {
+    directInput.value = select.value;
+  }
+}
+
+function joinRoomById(roomId) {
+  const directInput = document.getElementById('directRoomIdInput');
+  if (directInput) directInput.value = roomId;
   joinRoomSocket();
 }
 
 // 3. Step 3: Socket.IO Real-Time Connection
 function joinRoomSocket() {
-  if (!currentUser) return alert('Please complete Step 1 first.');
+  if (!currentUser) return alert('Please enter your name first.');
 
-  let roomId = currentRoom ? currentRoom.id : null;
+  const directInput = document.getElementById('directRoomIdInput');
   const select = document.getElementById('roomSelect');
-  if (select && select.value) roomId = select.value;
 
-  if (!roomId) return alert('Please select or create a room first.');
+  let roomId = null;
+  if (directInput && directInput.value.trim()) {
+    roomId = directInput.value.trim();
+  } else if (select && select.value) {
+    roomId = select.value;
+  } else if (currentRoom) {
+    roomId = currentRoom.id;
+  }
+
+  if (!roomId) return alert('Please enter a Room ID or choose an active room.');
+
+  if (!currentRoom || currentRoom.id !== roomId) {
+    currentRoom = { id: roomId, title: `Room (${roomId.substring(0, 8)}...)` };
+  }
+
+  const roomTitleElem = document.getElementById('currentRoomTitle');
+  if (roomTitleElem) roomTitleElem.innerText = currentRoom.title || `Room ${roomId.substring(0, 8)}`;
+
+  navigateToStep(3);
 
   if (!socket) {
     socket = io();
