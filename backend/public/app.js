@@ -136,16 +136,59 @@ function navigateToStep(stepNumber) {
   }
 }
 
-// Logging to Console
-function logConsole(type, data) {
-  const logContainer = document.getElementById('consoleLog');
-  if (!logContainer) return;
+// Sidebar Drawer Control & Toast Notifications
+function toggleLogSidebar(open) {
+  const drawer = document.getElementById('logSidebar');
+  const overlay = document.getElementById('logSidebarOverlay');
+  if (open) {
+    if (drawer) drawer.classList.add('active');
+    if (overlay) overlay.classList.add('active');
+  } else {
+    if (drawer) drawer.classList.remove('active');
+    if (overlay) overlay.classList.remove('active');
+  }
+}
 
-  const entry = document.createElement('div');
-  entry.className = `log-line ${type}`;
-  const time = new Date().toLocaleTimeString();
-  entry.innerHTML = `<strong style="color: var(--primary);">[${time}] ${type}</strong>: ${JSON.stringify(data)}`;
-  logContainer.prepend(entry);
+function showToast(type, data) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = 'toast-card';
+
+  let msgStr = typeof data === 'object' ? (data.message || data.name || JSON.stringify(data)) : String(data);
+  if (msgStr.length > 80) msgStr = msgStr.substring(0, 77) + '...';
+
+  toast.innerHTML = `
+    <div style="flex:1;">
+      <div class="toast-title">${type.replace(/_/g, ' ')}</div>
+      <div class="toast-msg">${msgStr}</div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(40px)';
+    toast.style.transition = 'all 0.25s ease';
+    setTimeout(() => toast.remove(), 280);
+  }, 3500);
+}
+
+// Logging to Live Activity Sidebar
+function logConsole(type, data) {
+  const logContainer = document.getElementById('sidebarLogContent');
+  if (logContainer) {
+    const entry = document.createElement('div');
+    entry.className = `log-line ${type}`;
+    const time = new Date().toLocaleTimeString();
+    entry.innerHTML = `<strong style="color: var(--primary);">[${time}] ${type}</strong>: ${JSON.stringify(data)}`;
+    logContainer.prepend(entry);
+  }
+
+  // Trigger floating toast for events
+  showToast(type, data);
 }
 
 // 1. Step 1: Select Player

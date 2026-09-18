@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ROXSTAR - Clean Multiplayer Live Audio & Spin Arena</title>
+  <title>RoxStar Game Arena</title>
   <link rel="stylesheet" href="/styles.css" />
   <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -14,139 +14,183 @@
   <!-- Winner Modal -->
   <div id="winnerModal" class="modal-overlay" style="display: none;">
     <div class="modal-card">
-      <div style="font-size: 2rem; margin-bottom: 6px;">👑</div>
-      <h2 style="color: var(--gold); font-size: 1.4rem;">CHAMPION CROWNED!</h2>
-      <div id="winnerModalText" style="font-size: 1rem; margin: 12px 0; color: var(--text-main);"></div>
-      <button class="btn btn-accent" style="padding: 10px 24px;" onclick="closeWinnerModal()">
-        Enjoy Reward!
+      <div class="icon-wrap gold" style="margin: 0 auto 12px auto;">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-8-4 7-6-7z"/></svg>
+      </div>
+      <h2 style="color: var(--gold); font-size: 1.25rem; font-weight: 700;">CHAMPION CROWNED</h2>
+      <div id="winnerModalText" style="font-size: 0.92rem; margin: 12px 0; color: var(--text-main);"></div>
+      <button class="btn btn-accent" style="padding: 9px 20px; font-size: 0.88rem;" onclick="closeWinnerModal()">
+        Enjoy Reward
       </button>
     </div>
   </div>
 
+  <!-- Toast Notification System -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Sliding Right Sidebar Drawer for Activity Logs -->
+  <div id="logSidebarOverlay" class="sidebar-overlay" onclick="toggleLogSidebar(false)"></div>
+  <aside id="logSidebar" class="sidebar-drawer">
+    <div class="sidebar-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <span style="font-weight: 700; font-size: 0.95rem; color: var(--text-main);">Live Activity Log</span>
+      </div>
+      <button class="icon-btn" onclick="toggleLogSidebar(false)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div id="consoleLog" class="sidebar-body">
+      <div style="color: var(--text-dim); font-size: 0.82rem;">WebSocket activity stream will appear here...</div>
+    </div>
+  </aside>
+
   <div class="app-container">
     
-    <!-- Minimalist Top Header -->
+    <!-- Clean Minimal Header -->
     <header class="navbar">
       <div class="brand">
-        <span class="brand-tag">ROXSTAR &bull; MULTIPLAYER GAME ARENA</span>
+        <span class="brand-tag">RoxStar Arena</span>
       </div>
 
-      <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem; height: 32px;" onclick="toggleLogSidebar(true)">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Logs
+        </button>
         <span id="connectionStatusPill" class="status-badge status-disconnected">Disconnected</span>
         <div id="activeUserBadge" class="user-badge">
           <img id="userAvatarImg" class="user-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=player_1" alt="Avatar" />
-          <span id="userNameLabel" style="font-weight: 700; font-size: 0.88rem; color: var(--text-main);">Player 1 (Host)</span>
-          <span id="userPointsLabel" class="role-badge role-participant" style="background: var(--gold-light); color: var(--gold);">100 PTS</span>
+          <span id="userNameLabel" style="font-weight: 600; font-size: 0.85rem; color: var(--text-main);">Player 1 (Host)</span>
         </div>
       </div>
     </header>
 
-    <!-- SECTION 1: HERO ROXSTAR GAME & PLAYER IDENTITY SELECTOR (STEP 1) -->
-    <main id="sectionStep1" class="content-section" style="display: flex; gap: 32px;">
+    <!-- STEP 1: HERO & PLAYER SELECTOR -->
+    <main id="sectionStep1" class="content-section">
       
-      <!-- Animated Hero Header -->
       <div class="section-hero">
-        <div class="center-emblem animate-up">🎙️</div>
-        <h1 class="brand-heading animate-up">RoxStar Game</h1>
-        <h2 class="hero-title animate-up-delay-1">Select Your Player Identity.</h2>
-        <p class="hero-subtitle animate-up-delay-1">Choose a player profile or enter a custom handle to join live rooms and spin wheels.</p>
+        <div class="center-emblem">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+        </div>
+        <h1 class="brand-heading">RoxStar Game</h1>
+        <h2 class="hero-title">Select Your Player Identity</h2>
+        <p class="hero-subtitle">Choose a player profile or enter a custom handle to join live rooms and spin wheels.</p>
       </div>
       
-      <!-- Unboxed Profile Selector & Floating Prompt Input -->
-      <div class="animate-up-delay-2" style="display: flex; flex-direction: column; gap: 24px; max-width: 820px; margin: 0 auto; width: 100%;">
+      <div style="display: flex; flex-direction: column; gap: 18px; max-width: 720px; margin: 0 auto; width: 100%;">
         
         <!-- 4 Profile Cards Grid -->
         <div class="player-grid-unboxed">
           <button class="player-select-btn active" id="btnP1" onclick="selectPlayer('player1')">
-            <div style="font-size: 1.4rem; margin-bottom: 2px;">👑</div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 4 3 12h14l3-12-6 7-4-8-4 7-6-7z"/></svg>
             Player 1 (Host)
           </button>
           <button class="player-select-btn" id="btnP2" onclick="selectPlayer('player2')">
-            <div style="font-size: 1.4rem; margin-bottom: 2px;">⚡</div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
             Player 2
           </button>
           <button class="player-select-btn" id="btnP3" onclick="selectPlayer('player3')">
-            <div style="font-size: 1.4rem; margin-bottom: 2px;">🎯</div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
             Player 3
           </button>
           <button class="player-select-btn" id="btnP4" onclick="selectPlayer('player4')">
-            <div style="font-size: 1.4rem; margin-bottom: 2px;">🔥</div>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
             Player 4
           </button>
         </div>
 
-        <!-- Floating Prompt Input Bar (DARUKAA Style) -->
+        <!-- Floating Prompt Input Bar -->
         <div class="floating-input-bar">
-          <input type="text" id="usernameInput" class="floating-input" placeholder="Type or edit your player handle..." value="Player 1 (Host)" />
+          <input type="text" id="usernameInput" class="floating-input" placeholder="Enter player handle..." value="Player 1 (Host)" />
           <button class="btn btn-hero" onclick="confirmStep1()">
-            Continue to Room Lobby →
+            Continue to Room Lobby
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
           </button>
         </div>
 
       </div>
     </main>
 
-    <!-- SECTION 2: CLEAN ROOM LOBBY (STEP 2) -->
+    <!-- STEP 2: ROOM LOBBY -->
     <main id="sectionStep2" class="content-section" style="display: none;">
       <div class="section-hero">
         <h1 class="hero-title">Live Room Lobby</h1>
         <p class="hero-subtitle">Join an ongoing active voice arena or launch a brand new room.</p>
       </div>
 
-      <!-- Segmented Mode Control -->
-      <div class="segmented-control" style="margin-top: 4px;">
-        <button class="segmented-btn active" id="modeJoinBtn" onclick="switchLobbyMode('join')">⚡ Join Active Room</button>
-        <button class="segmented-btn" id="modeCreateBtn" onclick="switchLobbyMode('create')">➕ Create New Room</button>
+      <div class="segmented-control" style="max-width: 480px; margin: 0 auto; width: 100%;">
+        <button class="segmented-btn active" id="modeJoinBtn" onclick="switchLobbyMode('join')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Join Active Room
+        </button>
+        <button class="segmented-btn" id="modeCreateBtn" onclick="switchLobbyMode('create')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Create New Room
+        </button>
       </div>
 
       <!-- Mode A: Join Room -->
-      <div id="lobbyJoinMode" style="display: flex; flex-direction: column; gap: 16px;">
+      <div id="lobbyJoinMode" style="display: flex; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto; width: 100%;">
         <div class="form-group">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
             <label>Select Active Room</label>
-            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem;" onclick="fetchRooms()">🔄 Refresh</button>
+            <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.75rem;" onclick="fetchRooms()">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/><path d="M3 21v-5h5"/></svg>
+              Refresh
+            </button>
           </div>
           <select id="roomSelect">
             <option value="">-- Choose active room --</option>
           </select>
         </div>
-        <button class="btn" style="padding: 14px; font-size: 0.95rem; border-radius: var(--radius-md);" onclick="joinRoomSocket()">
-          Enter Selected Room →
+        <button class="btn" style="padding: 11px; font-size: 0.9rem;" onclick="joinRoomSocket()">
+          Enter Selected Room
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </button>
       </div>
 
       <!-- Mode B: Create Room -->
-      <div id="lobbyCreateMode" style="display: none; flex-direction: column; gap: 16px;">
+      <div id="lobbyCreateMode" style="display: none; flex-direction: column; gap: 14px; max-width: 480px; margin: 0 auto; width: 100%;">
         <div class="form-group">
           <label>New Room Title</label>
           <input type="text" id="newRoomTitleInput" placeholder="e.g. Arena 1" value="Live Arena 1" />
         </div>
-        <button class="btn btn-accent" style="padding: 14px; font-size: 0.95rem; border-radius: var(--radius-md);" onclick="createRoom()">
-          🚀 Create & Enter Room
+        <button class="btn btn-accent" style="padding: 11px; font-size: 0.9rem;" onclick="createRoom()">
+          Create & Enter Room
         </button>
       </div>
 
     </main>
 
-    <!-- BIFURCATED SECTION 3: IN-ROOM WORKSPACE (STEP 3) -->
-    <main id="sectionStep3" style="display: none; flex-direction: column; gap: 20px;">
+    <!-- STEP 3: IN-ROOM WORKSPACE -->
+    <main id="sectionStep3" style="display: none; flex-direction: column; gap: 18px;">
       
       <!-- Room Header Banner -->
-      <div class="navbar" style="background: var(--bg-subtle);">
-        <div style="display: flex; align-items: center; gap: 12px;">
-          <strong style="font-size: 1.15rem;" id="currentRoomTitle">Live Arena 1</strong>
-          <span id="participantCountLabel" class="role-badge role-participant" style="padding: 4px 10px;">1 Online</span>
+      <div class="navbar" style="padding: 8px 0; border: none;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <strong style="font-size: 1.05rem;" id="currentRoomTitle">Live Arena 1</strong>
+          <span id="participantCountLabel" class="role-badge role-participant">1 Online</span>
         </div>
-        <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.82rem;" onclick="leaveRoomSocket()">
+        <button class="btn btn-secondary" style="padding: 5px 12px; font-size: 0.8rem;" onclick="leaveRoomSocket()">
           ← Back to Lobby
         </button>
       </div>
 
       <!-- Sub-Workspace Tabs -->
       <div class="segmented-control">
-        <button class="segmented-btn tab-btn active" data-view="arenaView" id="tabArena">👥 Members & Jukebox</button>
-        <button class="segmented-btn tab-btn" data-view="studioView" id="tabStudio">🎙️ Voice Studio</button>
-        <button class="segmented-btn tab-btn" data-view="spinView" id="tabSpin">🎡 Spin Wheel Arena</button>
+        <button class="segmented-btn tab-btn active" data-view="arenaView" id="tabArena">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Members & Jukebox
+        </button>
+        <button class="segmented-btn tab-btn" data-view="studioView" id="tabStudio">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+          Voice Studio
+        </button>
+        <button class="segmented-btn tab-btn" data-view="spinView" id="tabSpin">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2a10 10 0 0 1 10 10"/><path d="M12 12 2.1 10.5"/><path d="m12 12 7.1 7.1"/></svg>
+          Spin Wheel Arena
+        </button>
       </div>
 
       <!-- SUB-TAB 1: MEMBERS & JUKEBOX -->
@@ -156,23 +200,23 @@
           <!-- Members -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title">👥 Room Members</div>
+              <div class="card-title">Room Members</div>
             </div>
             <div id="participantsGrid" class="participants-grid">
-              <div style="color: var(--text-muted);">No members online.</div>
+              <div style="color: var(--text-muted); font-size: 0.85rem;">No members online.</div>
             </div>
           </div>
 
           <!-- Jukebox -->
           <div class="card">
             <div class="card-header">
-              <div class="card-title">🎵 Room Voice Takes</div>
-              <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 0.78rem;" onclick="switchToStudioTab()">
-                🎙️ Record Take
+              <div class="card-title">Room Voice Takes</div>
+              <button class="btn btn-secondary" style="padding: 3px 8px; font-size: 0.75rem;" onclick="switchToStudioTab()">
+                Record Take
               </button>
             </div>
-            <div id="jukeboxList" style="display: flex; flex-direction: column; gap: 10px;">
-              <div style="color: var(--text-muted);">No shared voice takes yet. Record one in Voice Studio!</div>
+            <div id="jukeboxList" style="display: flex; flex-direction: column; gap: 8px;">
+              <div style="color: var(--text-muted); font-size: 0.85rem;">No shared voice takes yet. Record one in Voice Studio!</div>
             </div>
           </div>
 
@@ -183,69 +227,64 @@
       <section id="studioView" class="view-section" style="display: none;">
         <div class="card">
           <div class="card-header">
-            <div class="card-title">🎙️ Audio Recording Studio</div>
+            <div class="card-title">Audio Recording Studio</div>
             <span class="status-badge status-connected">Web Audio API</span>
           </div>
 
-          <div style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- Light Waveform Container -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
             <div class="visualizer-container">
-              <canvas id="waveformCanvas" width="800" height="140"></canvas>
+              <canvas id="waveformCanvas" width="800" height="120"></canvas>
             </div>
 
-            <!-- Mic Input Level -->
             <div style="display: flex; flex-direction: column; gap: 4px;">
-              <div style="display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 700; color: var(--text-muted);">
+              <div style="display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 700; color: var(--text-muted);">
                 <span>MIC INPUT LEVEL</span>
                 <span>LIVE</span>
               </div>
-              <div style="width: 100%; height: 8px; background: var(--bg-subtle); border-radius: 9999px; overflow: hidden; border: 1px solid var(--border-subtle);">
+              <div style="width: 100%; height: 6px; background: var(--bg-subtle); border-radius: 9999px; overflow: hidden; border: 1px solid var(--border-subtle);">
                 <div id="micVolumeFill" style="width: 100%; height: 100%; background: var(--success); transform-origin: left; transform: scaleX(0); transition: transform 0.05s ease;"></div>
               </div>
             </div>
 
-            <!-- Effect Controls -->
             <div class="effect-controls">
               <div class="form-group">
                 <label>Echo Effect</label>
-                <button class="btn btn-secondary" id="toggleEchoBtn" onclick="window.webStudio.toggleEcho(true)">
-                  ✨ Echo ON
+                <button class="btn btn-secondary" id="toggleEchoBtn" style="font-size: 0.82rem;" onclick="window.webStudio.toggleEcho(true)">
+                  Echo ON
                 </button>
               </div>
 
               <div class="form-group">
                 <label>Delay (ms)</label>
                 <input type="range" min="0.05" max="0.8" step="0.01" value="0.25" oninput="window.webStudio.setDelayTime(this.value); document.getElementById('delayVal').innerText = Math.round(this.value * 1000) + 'ms';" />
-                <span id="delayVal" style="font-size: 0.8rem; font-weight: 700; color: var(--primary);">250ms</span>
+                <span id="delayVal" style="font-size: 0.78rem; font-weight: 700; color: var(--primary);">250ms</span>
               </div>
 
               <div class="form-group">
                 <label>Feedback</label>
                 <input type="range" min="0.0" max="0.8" step="0.05" value="0.4" oninput="window.webStudio.setFeedback(this.value); document.getElementById('feedbackVal').innerText = Math.round(this.value * 100) + '%';" />
-                <span id="feedbackVal" style="font-size: 0.8rem; font-weight: 700; color: var(--accent-pink);">40%</span>
+                <span id="feedbackVal" style="font-size: 0.78rem; font-weight: 700; color: var(--accent-pink);">40%</span>
               </div>
             </div>
 
-            <!-- Record & Share -->
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-              <button id="recBtn" class="btn btn-accent" onclick="startStudioRecord()">
-                🔴 Start Recording
+              <button id="recBtn" class="btn btn-accent" style="font-size: 0.88rem;" onclick="startStudioRecord()">
+                Start Recording
               </button>
-              <button id="stopRecBtn" class="btn btn-danger" style="display: none;" onclick="stopStudioRecord()">
-                ⏹️ Stop Recording
+              <button id="stopRecBtn" class="btn btn-danger" style="display: none; font-size: 0.88rem;" onclick="stopStudioRecord()">
+                Stop Recording
               </button>
-              <span id="studioStatusText" style="font-size: 0.85rem; color: var(--text-muted);">
+              <span id="studioStatusText" style="font-size: 0.82rem; color: var(--text-muted);">
                 Click Start Recording to record audio.
               </span>
             </div>
 
-            <!-- Preview & Share Box -->
-            <div id="shareTakeGroup" style="display: none; flex-direction: column; gap: 10px; background: var(--bg-subtle); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
+            <div id="shareTakeGroup" style="display: none; flex-direction: column; gap: 8px; background: var(--bg-subtle); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
               <label>Take Preview</label>
-              <audio id="studioPreviewAudio" controls style="width: 100%; height: 36px;"></audio>
+              <audio id="studioPreviewAudio" controls style="width: 100%; height: 32px;"></audio>
               <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <input type="text" id="takeTitleInput" placeholder="Take Title" value="Vocal Take 1" style="flex: 1;" />
-                <button class="btn" onclick="uploadAndShareTake()">
+                <button class="btn" style="font-size: 0.85rem;" onclick="uploadAndShareTake()">
                   Share to Jukebox
                 </button>
               </div>
@@ -259,37 +298,33 @@
       <section id="spinView" class="view-section" style="display: none;">
         <div class="card">
           <div class="card-header">
-            <div class="card-title">🎡 Elimination Spin Arena</div>
-            <div style="display: flex; gap: 8px; align-items: center;">
+            <div class="card-title">Elimination Spin Arena</div>
+            <div style="display: flex; gap: 6px; align-items: center;">
               <span id="readinessPill" class="role-badge role-host">3 / 3 Ready</span>
               <span id="spinStatusBadge" class="status-badge status-disconnected">WAITING</span>
-              <span id="spinCountdownPill" class="role-badge role-participant" style="display: none; background: var(--gold-light); color: var(--gold);">⏱️ 5s</span>
+              <span id="spinCountdownPill" class="role-badge role-participant" style="display: none; background: var(--gold-light); color: var(--gold);">5s</span>
             </div>
           </div>
 
           <div class="spin-arena-container">
-            <!-- Canvas Wheel -->
             <div class="wheel-wrapper">
               <div class="wheel-pointer"></div>
-              <canvas id="wheelCanvas" width="320" height="320"></canvas>
+              <canvas id="wheelCanvas" width="280" height="280"></canvas>
             </div>
 
-            <!-- Start Button -->
-            <button class="btn btn-accent" style="padding: 12px 32px; font-size: 0.95rem;" onclick="startSpinWheel()">
-              🚀 Start Spin Wheel (Host Only)
+            <button class="btn btn-accent" style="padding: 10px 24px; font-size: 0.88rem;" onclick="startSpinWheel()">
+              Start Spin Wheel (Host Only)
             </button>
 
-            <!-- Winner Banner -->
             <div id="winnerBanner" class="winner-banner" style="display: none; width: 100%;">
-              <h2 style="color: var(--gold); font-size: 1.3rem;">👑 CHAMPION CROWNED! 👑</h2>
-              <div id="winnerTextLabel" style="font-size: 0.95rem; margin-top: 4px; color: var(--text-main);"></div>
+              <h2 style="color: var(--gold); font-size: 1.15rem;">CHAMPION CROWNED</h2>
+              <div id="winnerTextLabel" style="font-size: 0.88rem; margin-top: 4px; color: var(--text-main);"></div>
             </div>
 
-            <!-- Seats Grid -->
             <div style="width: 100%;">
-              <label style="margin-bottom: 8px; display: block;">Player Seats</label>
+              <label style="margin-bottom: 6px; display: block;">Player Seats</label>
               <div id="spinSeatsGrid" class="spin-seats-grid">
-                <div style="color: var(--text-muted);">Start a spin to populate player seats.</div>
+                <div style="color: var(--text-muted); font-size: 0.85rem;">Start a spin to populate player seats.</div>
               </div>
             </div>
           </div>
@@ -298,28 +333,20 @@
 
     </main>
 
-    <!-- Collapsible Dev Console Drawer -->
-    <details class="console-drawer">
-      <summary>⚡ Developer WebSocket Log (Click to Expand)</summary>
-      <div id="consoleLog" class="console-log">
-        <div style="color: var(--text-dim);">WebSocket activity stream will appear here...</div>
-      </div>
-    </details>
-
   </div>
 
-  <!-- FIXED BOTTOM TIMELINE STEPPER BAR -->
+  <!-- FIXED BOTTOM STEPPER BAR -->
   <div class="stepper-bar">
     <div id="step1Indicator" class="step-item active">
       <span class="step-num">1</span>
       <span>Identity</span>
     </div>
-    <div style="color: var(--border-strong); font-size: 1.1rem;">→</div>
+    <div style="color: var(--border-strong); font-size: 0.9rem;">→</div>
     <div id="step2Indicator" class="step-item">
       <span class="step-num">2</span>
       <span>Lobby</span>
     </div>
-    <div style="color: var(--border-strong); font-size: 1.1rem;">→</div>
+    <div style="color: var(--border-strong); font-size: 0.9rem;">→</div>
     <div id="step3Indicator" class="step-item">
       <span class="step-num">3</span>
       <span>Arena</span>
@@ -330,3 +357,4 @@
   <script src="/app.js"></script>
 </body>
 </html>
+
