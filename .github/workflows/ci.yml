@@ -1,0 +1,101 @@
+name: ROXSTAR Platform CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  backend-test:
+    name: Backend Tests & Quality
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: testpassword
+          POSTGRES_DB: roxstar_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run Database Migrations
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://postgres:testpassword@localhost:5432/roxstar_test_db
+          DB_SSL: 'false'
+        run: npm run migrate
+
+      - name: Run Backend Tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql://postgres:testpassword@localhost:5432/roxstar_test_db
+          DB_SSL: 'false'
+          PORT: 5000
+        run: npm test
+
+  docker-build:
+    name: Docker Container Build
+    runs-on: ubuntu-latest
+    needs: backend-test
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./backend/Dockerfile
+          push: false
+          tags: roxstar-backend:latest
+
+  # ==========================================
+  # 3. Continuous Deployment (CD) to AWS EC2
+  # ==========================================
+  deploy:
+    name: Continuous Deployment to AWS EC2
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy to AWS EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        continue-on-error: true
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            cd ~/Andriod-App || cd Andriod-App
+            git pull origin main
+            docker compose up --build -d
+            echo "🚀 Deployment successfully completed on AWS EC2!"

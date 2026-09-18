@@ -1,0 +1,146 @@
+﻿openapi: 3.0.3
+info:
+  title: ROXSTAR Audio & Multiplayer Room API
+  description: Production REST API for Voice Draft management, Audio Processing takes, User authentication, and Room Sessions.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+  - url: https://api.roxstar.audio/api
+    description: Production Cloud Gateway
+
+paths:
+  /auth/login:
+    post:
+      summary: Authenticate or register user
+      description: Logs in an existing user or creates a new user profile with 100 default virtual points.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username]
+              properties:
+                username:
+                  type: string
+                  example: Ayush
+                display_name:
+                  type: string
+                  example: Ayush
+      responses:
+        '200':
+          description: Successfully authenticated
+        '400':
+          description: Username is required
+
+  /drafts/upload:
+    post:
+      summary: Upload audio recording take
+      description: Uploads a multipart/form-data .wav audio draft recorded from the native C++ AAudio engine.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [user_id, title, audio]
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+                  example: Rockstar Echo Take 1
+                duration_ms:
+                  type: integer
+                  example: 6321
+                effect_applied:
+                  type: string
+                  enum: [CLEAN, ECHO]
+                  example: ECHO
+                audio:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Draft uploaded and recorded in PostgreSQL
+        '400':
+          description: Missing required fields or invalid file format
+
+  /rooms:
+    get:
+      summary: List active rooms
+      description: Returns all active multiplayer rooms with online participant counts.
+      responses:
+        '200':
+          description: List of rooms
+    post:
+      summary: Create a multiplayer room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, owner_id]
+              properties:
+                title:
+                  type: string
+                  example: Rockstar Jam
+                owner_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Room created successfully
+
+  /rooms/{id}:
+    get:
+      summary: Get room details
+      description: Returns room metadata, online participants, active spin status, and shared jukebox voice takes.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Room details
+        '404':
+          description: Room not found
+
+  /rooms/{id}/join:
+    post:
+      summary: Join room as participant
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Joined room successfully
+
+  /health:
+    get:
+      summary: System health check
+      description: Probes Node.js runtime and PostgreSQL connectivity.
+      responses:
+        '200':
+          description: System healthy

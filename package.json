@@ -1,0 +1,11 @@
+{
+  "name": "roxstar-root",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend dev",
+    "test": "npm --prefix backend test"
+  }
+}

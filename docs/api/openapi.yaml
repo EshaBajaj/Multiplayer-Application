@@ -1,0 +1,143 @@
+openapi: 3.0.3
+info:
+  title: ROXSTAR Real-Time Voice Room & Spin Wheel API
+  description: Unified REST API specification for user management, room lifecycle, voice draft hosting, and spin wheel state retrieval.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local / Development Server
+  - url: https://api.roxstar.app
+    description: Production Cloud Deployment
+
+paths:
+  /health:
+    get:
+      summary: Server Health & Database Ping
+      responses:
+        '200':
+          description: Server and Database operational
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  database:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: connected
+
+  /api/users:
+    post:
+      summary: Create or Authenticate User Profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+              properties:
+                username:
+                  type: string
+                  example: player_1
+                display_name:
+                  type: string
+                  example: Player 1 (Host)
+      responses:
+        '201':
+          description: User created
+        '200':
+          description: Existing user returned
+
+  /api/rooms:
+    get:
+      summary: List Active Rooms
+      responses:
+        '200':
+          description: Array of active rooms with online participant counts
+    post:
+      summary: Create New Room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - owner_id
+              properties:
+                title:
+                  type: string
+                  example: Live Audio Arena 1
+                owner_id:
+                  type: string
+                max_participants:
+                  type: integer
+                  example: 20
+      responses:
+        '201':
+          description: Room created successfully
+
+  /api/rooms/{id}:
+    get:
+      summary: Get Room Details and Online Members
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Room details and participant list
+
+  /api/drafts:
+    post:
+      summary: Save Voice Draft Metadata
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - title
+              properties:
+                user_id:
+                  type: string
+                title:
+                  type: string
+                  example: Vocal Take 1
+                duration_ms:
+                  type: integer
+                  example: 4500
+                effect_applied:
+                  type: string
+                  example: ECHO_DSP
+                file_url:
+                  type: string
+                  example: /uploads/take_12345.wav
+      responses:
+        '201':
+          description: Draft created
+
+  /api/spins/{id}:
+    get:
+      summary: Retrieve Spin Result Audit Record
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Complete spin outcome and winner details

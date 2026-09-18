@@ -1,0 +1,33 @@
+{
+  "name": "roxstar-backend",
+  "version": "1.0.0",
+  "description": "ROXSTAR Real-Time Room, Voice Draft & Spin Wheel Backend",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node src/db/migrate.js",
+    "db:migrate": "node src/db/migrate.js",
+    "db:test": "node src/db/test-connection.js",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.js --runInBand --detectOpenHandles --forceExit"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.13.1",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.3",
+    "uuid": "^11.0.5",
+    "ws": "^8.21.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "impeccable": "^3.5.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
